@@ -1,10 +1,12 @@
 package db;
+
 import model.CarAd
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import java.util.NoSuchElementException
 
+// a test-db storing data in memory
 class CarAdDummyDB extends CarAdDAO {
 
   // for the DummyDB, a mutable field should be acceptable:
@@ -24,8 +26,10 @@ class CarAdDummyDB extends CarAdDAO {
 
   def save(carAd: CarAd): Try[CarAd] = getOne(carAd.id) match {
     case Success(ca) =>
-      throw new IllegalArgumentException(
-        s"CarAd with id ${carAd.id} is alread in DB"
+      Failure(
+        new IllegalArgumentException(
+          s"CarAd with id ${carAd.id} is alread in DB"
+        )
       )
     case Failure(_) =>
       carAds = carAd :: carAds
@@ -41,5 +45,7 @@ class CarAdDummyDB extends CarAdDAO {
       carAds = carAds.filter(_.id != id)
       carAd
     })
+
+  def getKnownFuels() = Success(List("gasoline", "diesel"))
 
 }

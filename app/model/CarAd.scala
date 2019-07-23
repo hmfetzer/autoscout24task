@@ -15,27 +15,23 @@ import org.joda.time.LocalDate
  */
 
 /*
-    In a first attempt, I use an (kind of) enum for the Fuel type.
-    This is not adequate for a real System: It should be
-    possible to add new fuels without recompiling! The possible fuel
-    values could, for instance, be stored in a lookup-table in the database.
+    Datatype for fuel changed:
+    It seems easier to store Fuel as as String and perform
+    an explicit validation based on a list of allowed values,
+    possibly stored in the db!
  */
-sealed trait Fuel;
-object Fuel {
-  object gasoline extends Fuel
-  object diesel extends Fuel
-}
+
 /* Using a case class makes transfering from and to JSON easier */
 case class CarAd(
     id: Int,
     title: String,
-    fuel: Fuel,
+    fuel: String,
     price: Int,
     // The fieldname new can not be used because it is a reserved word.
     // Changing it to newCar should not be a problem. (Using as scala Symbol
     // `new` could be another option.)
     newCar: Boolean,
-    mileage: Int,
+    mileage: Option[Int],
     // Using joda for date without time, instead of the old java Date class
-    firstRegistration: LocalDate
+    firstRegistration: Option[LocalDate]
 )

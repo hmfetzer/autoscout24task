@@ -19,4 +19,6 @@ trait CarAdDAO {
   // Failure if not in DB or DB-Exception
   def delete(id: Int): Try[CarAd]
 
+  def getKnownFuels(): Try[List[String]]
+
 }
