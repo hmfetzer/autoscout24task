@@ -21,9 +21,10 @@ import org.joda.time.LocalDate
     values could, for instance, be stored in a lookup-table in the database.
  */
 sealed trait Fuel;
-object gasoline extends Fuel
-object diesel extends Fuel
-
+object Fuel {
+  object gasoline extends Fuel
+  object diesel extends Fuel
+}
 /* Using a case class makes transfering from and to JSON easier */
 case class CarAd(
     id: Int,
