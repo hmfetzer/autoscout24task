@@ -8,8 +8,8 @@ GET     /                           controllers.HomeController.index
 
 GET     /v1/carads                   controllers.CarAdController.getAll
 GET     /v1/carads/*id               controllers.CarAdController.getOne(id: Int)
-POST    /v1/carads/*id               controllers.CarAdController.add(id: Int)
-PUT     /v1/carads/*id               controllers.CarAdController.update(id: Int)
+POST    /v1/carads                   controllers.CarAdController.add
+PUT     /v1/carads                   controllers.CarAdController.update
 DELETE  /v1/carads/*id               controllers.CarAdController.delete(id: Int)
 
 # Map static resources from the /public folder to the /assets URL path

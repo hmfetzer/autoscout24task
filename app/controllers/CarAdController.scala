@@ -38,7 +38,9 @@ class CarAdController @Inject()(
     constructResponse(db.getOne(id))
   }
 
-  def add(id: Int) = Action(parse.tolerantJson) {
+  // Doesn't receive an id via path-parameter.
+  // Expects a NEW id provided in the JSON-Body
+  def add() = Action(parse.tolerantJson) {
     implicit request: Request[JsValue] =>
       request.body
         .validate[CarAd]
@@ -50,7 +52,9 @@ class CarAdController @Inject()(
         )
   }
 
-  def update(id: Int) = Action(parse.tolerantJson) {
+  // Doesn't receive an id via path-parameter.
+  // Expects a USED id provided in the JSON-Body
+  def update = Action(parse.tolerantJson) {
     implicit request: Request[JsValue] =>
       request.body
         .validate[CarAd]
