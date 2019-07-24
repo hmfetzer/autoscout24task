@@ -85,9 +85,27 @@ class CarAdH2DAO() extends CarAdDAO {
     }
   }
 
-  def update(carAd: CarAd): Try[CarAd] = ???
+  // Not efficient - but very easy to implement:
+  def update(carAd: CarAd): Try[CarAd] =
+    delete(carAd.id).flatMap(_ => save(carAd))
 
-  def delete(id: Int): Try[CarAd] = ???
+  def delete(id: Int): Try[CarAd] =
+    getOne(id).flatMap(
+      ca =>
+        Try {
+          db.withConnection { con =>
+            val sql = "delete from carads where id = " + id
+            log.info(sql)
+            val stmt = con.createStatement
+            stmt.execute(sql)
+            if (stmt.getUpdateCount() == 1) ca
+            else
+              throw new Error(
+                "Not one record was deleted but " + stmt.getUpdateCount()
+              )
+          }
+        }
+    )
 
   def getKnownFuels(): Try[List[String]] = Try {
     db.withConnection { con: Connection =>

@@ -1,7 +1,9 @@
 package db;
 import model.CarAd
 import scala.util.Try
+import com.google.inject.ImplementedBy
 
+@ImplementedBy(classOf[CarAdH2DAO])
 trait CarAdDAO {
 
   case class Ordering(field: String, ascending: Boolean)

@@ -12,7 +12,7 @@ import scala.util.parsing.json.JSONObject
 import model.CarAd
 import org.joda.time.LocalDate
 import org.slf4j.LoggerFactory
-import _root_.db.CarAdH2DAO
+import _root_.db.CarAdDAO
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -21,7 +21,7 @@ import _root_.db.CarAdH2DAO
 @Singleton
 class CarAdController @Inject()(
     cc: ControllerComponents,
-    db: CarAdH2DAO
+    db: CarAdDAO
 ) extends AbstractController(cc)
     with JsonWritersAndReaders {
 
@@ -63,7 +63,7 @@ class CarAdController @Inject()(
   }
 
   def delete(id: Int) = Action { implicit request: Request[AnyContent] =>
-    constructResponse(db.getAll(None))
+    constructResponse(db.delete(id))
   }
 
   // validation acording to the task description - optionally returns an error message

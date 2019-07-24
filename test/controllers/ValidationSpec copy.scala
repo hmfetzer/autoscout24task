@@ -1,13 +1,15 @@
 package controllers;
+
 import org.scalatestplus.play.PlaySpec
 import db.TestData
 import play.api.test.Helpers._
 import org.joda.time.LocalDate
 import javax.inject._
+import db._
 
 class ValidationSpec extends PlaySpec with TestData {
 
-  @Inject() val cac: CarAdController
+  val cac = new CarAdController(null, new CarAdDummyDB)
   val knownFuels = List("gasoline", "diesel")
 
   "CarAdController validation " should {
