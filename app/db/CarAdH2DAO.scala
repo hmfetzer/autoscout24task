@@ -63,7 +63,7 @@ class CarAdH2DAO() extends CarAdDAO {
   }
 
   private def dateToSql(d: LocalDate): String =
-    s"PARSEDATETIME('$d','yyyy-mm-dd','en')"
+    s"PARSEDATETIME('$d','yyyy-MM-dd','en')"
 
   def save(carAd: CarAd): Try[CarAd] = Try {
     db.withConnection { con: Connection =>

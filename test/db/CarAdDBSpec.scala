@@ -2,9 +2,10 @@ package db
 import org.scalatestplus.play.PlaySpec
 import scala.util.Success
 import scala.util.Failure
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 
 // some quick (and partly trivial) tests for the DummyDB
-trait CarAdDBSpec extends PlaySpec with TestData {
+trait CarAdDBSpec extends PlaySpec with GuiceOneAppPerTest with TestData {
 
   def initDB: CarAdDAO
 
@@ -37,7 +38,7 @@ trait CarAdDBSpec extends PlaySpec with TestData {
     " not enable adding an ad twice" in {
       val db = initDB
       db.save(ad1) mustBe Success(ad1)
-      db.save(ad1) mustBe Failure(_: IllegalArgumentException)
+      db.save(ad1) mustBe Failure(_: Throwable)
     }
 
     "contain an element after adding" in {

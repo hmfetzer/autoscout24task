@@ -17,19 +17,19 @@ trait CarAdDAO {
 
   def init(): Unit
 
-  // Failure if DB-Exception
+  // Failure, if DB-Exception
   def getAll(ordering: Option[Ordering]): Try[List[CarAd]]
 
-  // Failure if not in DB or DB-Exception
+  // Failure, if not in DB or DB-Exception
   def getOne(id: Int): Try[CarAd]
 
-  // Failure if already in DB or DB-Exception
+  // Failure, if already in DB or DB-Exception
   def save(carAd: CarAd): Try[CarAd]
 
-  // Failure if not in DB or DB-Exception
+  // Failure, if not in DB or DB-Exception
   def update(carAd: CarAd): Try[CarAd]
 
-  // Failure if not in DB or DB-Exception
+  // Failure, if not in DB or DB-Exception
   def delete(id: Int): Try[CarAd]
 
   def getKnownFuels(): Try[List[String]]
