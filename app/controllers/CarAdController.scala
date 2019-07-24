@@ -12,6 +12,7 @@ import scala.util.parsing.json.JSONObject
 import model.CarAd
 import org.joda.time.LocalDate
 import org.slf4j.LoggerFactory
+import _root_.db.CarAdH2DAO
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -19,18 +20,18 @@ import org.slf4j.LoggerFactory
   */
 @Singleton
 class CarAdController @Inject()(
-    @Inject() cc: ControllerComponents
+    cc: ControllerComponents,
+    db: CarAdH2DAO
 ) extends AbstractController(cc)
     with JsonWritersAndReaders {
 
   val log = LoggerFactory.getLogger(this.getClass);
-  val db = new CarAdDummyDB
   db.init()
   val kf = db.getKnownFuels().fold(throw _, (ls: List[String]) => ls);
   log.info(s"Known Fuels: " + kf.mkString(", "))
 
   def getAll() = Action { implicit request: Request[AnyContent] =>
-    constructResponse(db.getAll())
+    constructResponse(db.getAll(None))
   }
 
   def getOne(id: Int) = Action { implicit request: Request[AnyContent] =>
@@ -62,7 +63,7 @@ class CarAdController @Inject()(
   }
 
   def delete(id: Int) = Action { implicit request: Request[AnyContent] =>
-    constructResponse(db.getAll())
+    constructResponse(db.getAll(None))
   }
 
   // validation acording to the task description - optionally returns an error message

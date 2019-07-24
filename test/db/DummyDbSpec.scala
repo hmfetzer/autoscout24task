@@ -1,6 +1,4 @@
-package db;
-
-
+package db
 
 // Testing the Dummy-DB
 class DummyDbSpec extends CarAdDBSpec {

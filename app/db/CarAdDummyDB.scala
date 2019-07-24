@@ -14,7 +14,7 @@ class CarAdDummyDB extends CarAdDAO {
 
   def init(): Unit = {} // nothing to initialize
 
-  def getAll(): Try[List[CarAd]] = Try {
+  def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Try {
     carAds
   }
 

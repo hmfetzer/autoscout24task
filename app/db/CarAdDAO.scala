@@ -4,10 +4,17 @@ import scala.util.Try
 
 trait CarAdDAO {
 
+  case class Ordering(field: String, ascending: Boolean)
+
+  def orderString(od: Option[Ordering]): String =
+    od.fold("")(
+      o => s"  order by ${o.field} " + (if (o.ascending) "" else " desc")
+    )
+
   def init(): Unit
 
   // Failure if DB-Exception
-  def getAll(): Try[List[CarAd]]
+  def getAll(ordering: Option[Ordering]): Try[List[CarAd]]
 
   // Failure if not in DB or DB-Exception
   def getOne(id: Int): Try[CarAd]

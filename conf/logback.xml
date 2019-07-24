@@ -27,6 +27,11 @@
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
 
+ <logger name="org.jdbcdslog.StatementLogger"  level="INFO" /> <!-- Will log all statements -->
+  <logger name="h2database" level="TRACE">
+    <appender-ref ref="STDOUT" />
+ </logger>
+
   <root level="INFO">
     <!--<appender-ref ref="ASYNCFILE" />-->
     <appender-ref ref="ASYNCSTDOUT" />

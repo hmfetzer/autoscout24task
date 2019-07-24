@@ -12,7 +12,7 @@ class CarAdErrorDB extends CarAdDAO {
 
   def init() = {}
 
-  def getAll(): Try[List[CarAd]] = Failure(err)
+  def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Failure(err)
 
   def getOne(id: Int): Try[CarAd] = Failure(err)
 

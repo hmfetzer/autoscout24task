@@ -12,7 +12,7 @@ trait CarAdDBSpec extends PlaySpec with TestData {
 
     "initially be empty " in {
       val db = initDB
-      db.getAll() mustBe Success(List())
+      db.getAll(None) mustBe Success(List())
     }
 
     "initially not have an carAd with id 1" in {
@@ -51,7 +51,7 @@ trait CarAdDBSpec extends PlaySpec with TestData {
       db.save(ad1) mustBe Success(ad1)
       db.delete(ad1.id) mustBe Success(ad1)
       // after deleting db should be empty
-      db.getAll() mustBe Success(List())
+      db.getAll(None) mustBe Success(List())
     }
 
     " update an existing element " in {

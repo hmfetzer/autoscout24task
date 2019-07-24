@@ -6,22 +6,84 @@ import scala.util.Success
 import scala.util.Failure
 import java.util.NoSuchElementException
 import com.google.common.collect.ImmutableMap
-import play.db.Database
 import javax.inject.Inject
 import java.sql.Statement
 import java.sql.Connection
+import java.sql.ResultSet
+import scala.collection.mutable
+import org.joda.time.LocalDate
+import org.slf4j.LoggerFactory
+import play.api.db.Databases
 
-class CarAdH2DAO @Inject()(db: Database) extends CarAdDAO {
+class CarAdH2DAO() extends CarAdDAO {
+
+  val log = LoggerFactory.getLogger(this.getClass)
+  log.info(this.getClass.toString + " loaded")
+
+  val db = Databases.inMemory()
 
   def init(): Unit = db.withConnection { con: Connection =>
-    con.createStatement.execute(createDb)
+    log.info(createDbSql)
+    con.createStatement.execute(createDbSql)
   }
 
-  def getAll(): Try[List[CarAd]] = ???
+  def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Try {
+    db.withConnection { con: Connection =>
+      val sql = "select * from carads " + orderString(ordering)
+      log.info(sql)
+      val rs = con.createStatement.executeQuery(sql)
+      val res = mutable.Buffer[CarAd]()
+      while (rs.next) res.append(getOneCarAd(rs))
+      res.toList
+    }
+  }
 
-  def getOne(id: Int): Try[CarAd] = ???
+  private def getOneCarAd(rs: ResultSet): CarAd = {
+    val id = rs.getInt("id")
+    val title = rs.getString("title")
+    val fuel = rs.getString("fuel")
+    val price = rs.getInt("price")
+    val newCar = rs.getBoolean("newCar")
+    val ml = rs.getInt("mileage")
+    val mileage = if (rs.wasNull()) None else Some(ml)
+    val reg = rs.getDate("firstRegistration")
+    val firstReg: Option[LocalDate] =
+      if (rs.wasNull()) None else Some(new LocalDate(reg))
+    CarAd(id, title, fuel, price, newCar, mileage, firstReg)
+  }
 
-  def save(carAd: CarAd): Try[CarAd] = ???
+  def getOne(id: Int): Try[CarAd] = Try {
+    db.withConnection { con: Connection =>
+      val sql = "select * from carads where id = " + id
+      log.info(sql)
+      val rs = con.createStatement.executeQuery(sql)
+      if (rs.next) getOneCarAd(rs)
+      else throw new NoSuchElementException(s"CarAd with id $id was not found")
+    }
+  }
+
+  private def dateToSql(d: LocalDate): String =
+    s"PARSEDATETIME('$d','yyyy-mm-dd','en')"
+
+  def save(carAd: CarAd): Try[CarAd] = Try {
+    db.withConnection { con: Connection =>
+      import carAd._
+      val sql = s""" 
+        insert into carads values (
+          $id,
+          '$title',
+          '$fuel',
+          $price,
+          $newCar,
+          ${mileage.fold("null")(_.toString)},
+          ${firstRegistration.fold("null")(dateToSql(_))}
+        ) 
+        """
+      log.info(sql)
+      con.createStatement.execute(sql)
+      carAd
+    }
+  }
 
   def update(carAd: CarAd): Try[CarAd] = ???
 
@@ -37,7 +99,7 @@ class CarAdH2DAO @Inject()(db: Database) extends CarAdDAO {
     }
   }
 
-  val createDb = """
+  val createDbSql = """
       drop table if exists carads;
       create table carads (
         id        int primary key,
