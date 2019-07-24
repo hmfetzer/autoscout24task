@@ -10,6 +10,8 @@ class CarAdErrorDB extends CarAdDAO {
 
   val err = new Error("CarAdErrorDB returns only  Errors")
 
+  def init() = {}
+
   def getAll(): Try[List[CarAd]] = Failure(err)
 
   def getOne(id: Int): Try[CarAd] = Failure(err)
