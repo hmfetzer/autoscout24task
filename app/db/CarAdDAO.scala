@@ -4,6 +4,8 @@ import scala.util.Try
 
 trait CarAdDAO {
 
+  def init(): Unit
+
   // Failure if DB-Exception
   def getAll(): Try[List[CarAd]]
 

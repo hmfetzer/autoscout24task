@@ -12,6 +12,8 @@ class CarAdDummyDB extends CarAdDAO {
   // for the DummyDB, a mutable field should be acceptable:
   var carAds: List[CarAd] = List();
 
+  def init(): Unit = {} // nothing to initialize
+
   def getAll(): Try[List[CarAd]] = Try {
     carAds
   }
@@ -46,6 +48,6 @@ class CarAdDummyDB extends CarAdDAO {
       carAd
     })
 
-  def getKnownFuels() = Success(List("gasoline", "diesel"))
+  def getKnownFuels(): Try[List[String]] = Success(List("gasoline", "diesel"))
 
 }
