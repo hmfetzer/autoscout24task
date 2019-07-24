@@ -1,6 +1,5 @@
 package controllers
 
-import db.CarAdDummyDB
 import javax.inject._
 import play.api._
 import play.api.mvc._
@@ -13,6 +12,7 @@ import model.CarAd
 import org.joda.time.LocalDate
 import org.slf4j.LoggerFactory
 import _root_.db.CarAdDAO
+import _root_.db.Ordering
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -28,11 +28,23 @@ class CarAdController @Inject()(
   val log = LoggerFactory.getLogger(this.getClass);
   db.init()
   val kf = db.getKnownFuels().fold(throw _, (ls: List[String]) => ls);
-  log.info(s"Known Fuels: " + kf.mkString(", "))
+  log.debug(s"Known Fuels: " + kf.mkString(", "))
 
   def getAll() = Action { implicit request: Request[AnyContent] =>
-    constructResponse(db.getAll(None))
+    val order = orderParam(request.getQueryString(db.orderString))
+    log.debug(order.toString)
+    constructResponse(db.getAll(order))
   }
+
+  private def orderParam(os: Option[String]): Option[Ordering] = os.flatMap(
+    s =>
+      if (s.length < 1) None
+      else {
+        val s0 = s(0)
+        val field = if (List('-', '+', ' ') contains s0) s.drop(1) else s
+        Some(Ordering(field, s0 == '-'))
+      }
+  )
 
   def getOne(id: Int) = Action { implicit request: Request[AnyContent] =>
     constructResponse(db.getOne(id))
@@ -40,16 +52,15 @@ class CarAdController @Inject()(
 
   // Doesn't receive an id via path-parameter.
   // Expects a NEW id provided in the JSON-Body
-  def add() = Action(parse.tolerantJson) {
-    implicit request: Request[JsValue] =>
-      request.body
-        .validate[CarAd]
-        .fold(
-          e => BadRequest(e.toString),
-          ca =>
-            validateCarAd(ca, kf)
-              .fold(constructResponse(db.save(ca)))(BadRequest(_))
-        )
+  def add() = Action(parse.tolerantJson) { implicit request: Request[JsValue] =>
+    request.body
+      .validate[CarAd]
+      .fold(
+        e => BadRequest(e.toString),
+        ca =>
+          validateCarAd(ca, kf)
+            .fold(constructResponse(db.save(ca)))(BadRequest(_))
+      )
   }
 
   // Doesn't receive an id via path-parameter.

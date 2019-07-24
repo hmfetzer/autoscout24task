@@ -18,19 +18,19 @@ import play.api.db.Databases
 class CarAdH2DAO() extends CarAdDAO {
 
   val log = LoggerFactory.getLogger(this.getClass)
-  log.info(this.getClass.toString + " loaded")
+  log.debug(this.getClass.toString + " loaded")
 
   val db = Databases.inMemory()
 
   def init(): Unit = db.withConnection { con: Connection =>
-    log.info(createDbSql)
+    log.debug(createDbSql)
     con.createStatement.execute(createDbSql)
   }
 
   def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Try {
     db.withConnection { con: Connection =>
       val sql = "select * from carads " + orderString(ordering)
-      log.info(sql)
+      log.debug(sql)
       val rs = con.createStatement.executeQuery(sql)
       val res = mutable.Buffer[CarAd]()
       while (rs.next) res.append(getOneCarAd(rs))
@@ -55,7 +55,7 @@ class CarAdH2DAO() extends CarAdDAO {
   def getOne(id: Int): Try[CarAd] = Try {
     db.withConnection { con: Connection =>
       val sql = "select * from carads where id = " + id
-      log.info(sql)
+      log.debug(sql)
       val rs = con.createStatement.executeQuery(sql)
       if (rs.next) getOneCarAd(rs)
       else throw new NoSuchElementException(s"CarAd with id $id was not found")
@@ -79,7 +79,7 @@ class CarAdH2DAO() extends CarAdDAO {
           ${firstRegistration.fold("null")(dateToSql(_))}
         ) 
         """
-      log.info(sql)
+      log.debug(sql)
       con.createStatement.execute(sql)
       carAd
     }
@@ -95,7 +95,7 @@ class CarAdH2DAO() extends CarAdDAO {
         Try {
           db.withConnection { con =>
             val sql = "delete from carads where id = " + id
-            log.info(sql)
+            log.debug(sql)
             val stmt = con.createStatement
             stmt.execute(sql)
             if (stmt.getUpdateCount() == 1) ca

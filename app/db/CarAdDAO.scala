@@ -3,14 +3,16 @@ import model.CarAd
 import scala.util.Try
 import com.google.inject.ImplementedBy
 
+case class Ordering(field: String, descending: Boolean)
+
 @ImplementedBy(classOf[CarAdH2DAO])
 trait CarAdDAO {
 
-  case class Ordering(field: String, ascending: Boolean)
+  val orderString = "sortby"
 
   def orderString(od: Option[Ordering]): String =
     od.fold("")(
-      o => s"  order by ${o.field} " + (if (o.ascending) "" else " desc")
+      o => s"  order by ${o.field} " + (if (o.descending) " desc" else "")
     )
 
   def init(): Unit
