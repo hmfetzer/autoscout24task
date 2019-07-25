@@ -5,6 +5,7 @@ import com.google.inject.ImplementedBy
 
 case class Ordering(field: String, descending: Boolean)
 
+// interface, to be implemented for different databases
 @ImplementedBy(classOf[CarAdH2DAO])
 trait CarAdDAO {
 

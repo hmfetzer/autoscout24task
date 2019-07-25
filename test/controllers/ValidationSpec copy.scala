@@ -9,7 +9,7 @@ import db._
 
 class ValidationSpec extends PlaySpec with TestData {
 
-  val cac = new CarAdController(null, new CarAdDummyDB)
+  val cac = new CarAdController(null, new CarAdDummyDAO)
   val knownFuels = List("gasoline", "diesel")
 
   "CarAdController validation " should {

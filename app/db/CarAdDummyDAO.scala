@@ -6,8 +6,8 @@ import scala.util.Success
 import scala.util.Failure
 import java.util.NoSuchElementException
 
-// a test-db storing data in memory
-class CarAdDummyDB extends CarAdDAO {
+// a test-db storing data in memory in a scala list
+class CarAdDummyDAO extends CarAdDAO {
 
   // for the DummyDB, a mutable field should be acceptable:
   var carAds: List[CarAd] = List();
