@@ -11,7 +11,6 @@ trait JsonWritersAndReaders {
   }
   implicit val loacalDateReads: Reads[LocalDate] = new Reads[LocalDate] {
     def reads(json: JsValue) = {
-      println(json.toString())
       Try { LocalDate.parse(json.as[String]) }.fold(
         e => JsError(e.toString),
         d => JsSuccess(d)

@@ -21,7 +21,7 @@ trait TestData {
       "price": 2,
       "newCar": false,
       "mileage": 3,
-      "firstRegistration": "2015-02-20T00:00:00.000Z"
+      "firstRegistration": "2015-02-20"
       }  """
 
   val ad2 = CarAd(

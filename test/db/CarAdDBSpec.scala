@@ -4,12 +4,12 @@ import scala.util.Success
 import scala.util.Failure
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 
-// some quick (and partly trivial) tests for the DummyDB
+// some quick tests that could be performed on any DB/DAO instance
 trait CarAdDBSpec extends PlaySpec with GuiceOneAppPerTest with TestData {
 
   def initDB: CarAdDAO
 
-  "CarAdDummyDB " should {
+  "The DB " should {
 
     "initially be empty " in {
       val db = initDB

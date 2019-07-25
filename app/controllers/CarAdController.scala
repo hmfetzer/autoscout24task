@@ -94,7 +94,7 @@ class CarAdController @Inject()(
     }
   }
 
-  def constructResponse[T: Writes](dbRes: Try[T]) = {
+  def constructResponse[T: Writes](dbRes: Try[T]): Result = {
     dbRes match {
       case Success(t)                           => Ok(Json.toJson[T](t))
       case Failure(e: NoSuchElementException)   => NotFound(e.toString)
