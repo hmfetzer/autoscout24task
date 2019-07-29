@@ -6,7 +6,7 @@ This project is a task in the recruiting process of AutoScout24. It is an opport
 
 The REST service is built in the environment:
 
-- Play framework 2.73
+- Play framework 2.7.3
 - Scala 2.13.0
 - H2 in memory DB
 - IDE: VS Code 1.36.1 with Scala Metal (and surprisingly little problems)
