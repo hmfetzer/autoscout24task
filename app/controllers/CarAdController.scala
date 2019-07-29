@@ -50,35 +50,32 @@ class CarAdController @Inject()(
     constructResponse(db.getOne(id))
   }
 
-  // Doesn't receive an id via path-parameter.
   // Expects a NEW id provided in the JSON-Body
   def add() = Action(parse.tolerantJson) { implicit request: Request[JsValue] =>
+    validateAndProcessJsonCarAd(db.save)
+  }
+
+  // Expects a USED id provided in the JSON-Body
+  def update = Action(parse.tolerantJson) {
+    implicit request: Request[JsValue] =>
+      validateAndProcessJsonCarAd(db.update)
+  }
+
+  def delete(id: Int) = Action { implicit request: Request[AnyContent] =>
+    constructResponse(db.delete(id))
+  }
+
+  def validateAndProcessJsonCarAd(
+      f: CarAd => Try[CarAd]
+  )(implicit request: Request[JsValue]): Result = {
     request.body
       .validate[CarAd]
       .fold(
         e => BadRequest(e.toString),
         ca =>
           validateCarAd(ca, kf)
-            .fold(constructResponse(db.save(ca)))(BadRequest(_))
+            .fold(constructResponse(f(ca)))(BadRequest(_))
       )
-  }
-
-  // Doesn't receive an id via path-parameter.
-  // Expects a USED id provided in the JSON-Body
-  def update = Action(parse.tolerantJson) {
-    implicit request: Request[JsValue] =>
-      request.body
-        .validate[CarAd]
-        .fold(
-          e => BadRequest(e.toString),
-          ca =>
-            validateCarAd(ca, kf)
-              .fold(constructResponse(db.update(ca)))(BadRequest(_))
-        )
-  }
-
-  def delete(id: Int) = Action { implicit request: Request[AnyContent] =>
-    constructResponse(db.delete(id))
   }
 
   // validation acording to the task description - optionally returns an error message
