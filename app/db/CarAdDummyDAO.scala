@@ -49,8 +49,4 @@ class CarAdDummyDAO extends CarAdDAO {
       carAd
     })
 
-  def getKnownFuels(): Future[List[String]] = Future {
-    (List("gasoline", "diesel"))
-  }
-
 }

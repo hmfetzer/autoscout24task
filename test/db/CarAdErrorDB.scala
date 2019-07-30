@@ -27,6 +27,4 @@ class CarAdErrorDB extends CarAdDAO {
 
   def delete(id: Int): Future[CarAd] = Future { throw err }
 
-  def getKnownFuels(): Future[List[String]] = Future { throw err }
-
 }

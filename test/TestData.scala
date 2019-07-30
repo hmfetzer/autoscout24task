@@ -7,7 +7,7 @@ trait TestData {
   val usedAd = UsedCarAd(
     id = 1,
     title = "Used ad with id 1",
-    fuel = "diesel",
+    fuel = Diesel,
     price = 2,
     mileage = 3,
     firstRegistration = new LocalDate(2015, 2, 20)
@@ -25,14 +25,14 @@ trait TestData {
   val newAd = NewCarAd(
     id = 2,
     title = "New ad with id 2",
-    fuel = "diesel",
+    fuel = Gasoline,
     price = 22
   )
 
   val newAd2 = NewCarAd(
     id = 3,
     title = "An other new ad with id 3",
-    fuel = "diesel",
+    fuel = Diesel,
     price = 22
   )
   val newAdJson = """ {

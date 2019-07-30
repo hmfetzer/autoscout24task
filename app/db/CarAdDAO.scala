@@ -33,6 +33,4 @@ trait CarAdDAO {
   // Failure, if not in DB or DB-Exception
   def delete(id: Int): Future[CarAd]
 
-  def getKnownFuels(): Future[List[String]]
-
 }

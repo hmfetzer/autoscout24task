@@ -24,7 +24,7 @@ trait JsonWritersAndReaders {
     def reads(jsv: JsValue): JsResult[CarAd] = {
       val id = (jsv \ "id").validate[Int]
       val title = (jsv \ "title").validate[String]
-      val fuel = (jsv \ "fuel").validate[String]
+      val fuel = (jsv \ "fuel").validate[Fuel]
       val price = (jsv \ "price").validate[Int]
       val used = (jsv \ "mileage").isDefined || (jsv \ "firstRegistrations").isDefined
       val mileage = (jsv \ "mileage").validate[Int]
@@ -38,6 +38,23 @@ trait JsonWritersAndReaders {
         r <- firstRegistration
       } yield
         if (used) new UsedCarAd(i, t, f, p, m, r) else new NewCarAd(i, t, f, p)
+    }
+  }
+
+  implicit val fuelReads: Reads[Fuel] = new Reads[Fuel] {
+    def reads(jsv: JsValue): JsResult[Fuel] = jsv match {
+      case JsString(f) =>
+        if (f == "gasoline") JsSuccess(Gasoline)
+        else if (f == "diesel") JsSuccess(Diesel)
+        else JsError(s"Found '$f', expected 'gasoline' or 'diesel' ")
+      case _ => JsError(s"Cannot convert JsValue '$jsv' to gasoline or diesel")
+    }
+  }
+
+  implicit val fuelWrites: Writes[Fuel] = new Writes[Fuel] {
+    def writes(f: Fuel): JsValue = f match {
+      case Gasoline => JsString("gasoline")
+      case Diesel   => JsString("diesel")
     }
   }
 

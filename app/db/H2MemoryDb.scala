@@ -20,14 +20,7 @@ trait H2MemoryDb {
       price     int not null,
       mileage   int,
       firstRegistration date
-    );
-
-    drop table if exists fuels;
-    create table fuels (
-      fuel  varchar(255)
-    );
-    insert into fuels values ('gasoline');
-    insert into fuels values ('diesel'); """
+    ); """
 
     con.createStatement.execute(createDbSql)
   }

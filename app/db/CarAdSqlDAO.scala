@@ -42,7 +42,7 @@ trait CarAdSqlDAO extends CarAdDAO {
   private def getOneCarAd(rs: ResultSet): CarAd = {
     val id = rs.getInt("id")
     val title = rs.getString("title")
-    val fuel = rs.getString("fuel")
+    val fuel = Fuel(rs.getString("fuel"))
     val price = rs.getInt("price")
     val ml = rs.getInt("mileage")
     val mileage = if (rs.wasNull()) None else Some(ml)
@@ -108,17 +108,5 @@ trait CarAdSqlDAO extends CarAdDAO {
             )
         }
     )
-
-  // the known fuels are stored in a db table.
-  // Fuels can be added or removed without recompile!
-  def getKnownFuels(): Future[List[String]] = Future {
-    db.withConnection { con: Connection =>
-      val sql = "select * from fuels"
-      val rs = con.createStatement.executeQuery(sql)
-      var res = List[String]()
-      while (rs.next) res = rs.getString("fuel") :: res
-      res
-    }
-  }
 
 }

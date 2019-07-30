@@ -14,32 +14,39 @@ import org.joda.time.LocalDate
 
  */
 
-/*
-    Datatype for fuel changed:
-    It seems easier to store Fuel as as String and perform
-    an explicit validation based on a list of allowed values,
-    possibly stored in the db!
- */
+sealed trait Fuel
+case object Gasoline extends Fuel { override def toString = "gasoline" }
+case object Diesel extends Fuel { override def toString = "diesel" }
 
-/* Using a case class makes transfering from and to JSON easier */
+object Fuel {
+  def apply(f: String): Fuel = f match {
+    case "diesel"   => Diesel
+    case "gasoline" => Gasoline
+    case _ =>
+      throw new IllegalArgumentException(
+        s"No known fuel: '$f', expected 'gasoline' or 'diesel'"
+      )
+  }
+}
+
 sealed trait CarAd {
   val id: Int
   val title: String
-  val fuel: String
+  val fuel: Fuel
   val price: Int
 }
 
 case class NewCarAd(
     id: Int,
     title: String,
-    fuel: String,
+    fuel: Fuel,
     price: Int
 ) extends CarAd
 
 case class UsedCarAd(
     id: Int,
     title: String,
-    fuel: String,
+    fuel: Fuel,
     price: Int,
     mileage: Int,
     firstRegistration: LocalDate

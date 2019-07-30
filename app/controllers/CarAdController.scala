@@ -32,10 +32,6 @@ class CarAdController @Inject()(
   val log = LoggerFactory.getLogger(this.getClass);
   db.init()
 
-  // Ok - waiting for a future to complete is an antipattern, but here,
-  // for one time access in initialisation phase it seems acceptable
-  val kf: List[String] = Await.result(db.getKnownFuels(), 10.seconds);
-
   def getAll() = Action.async { implicit request: Request[AnyContent] =>
     val order = orderParam(request.getQueryString(db.orderString))
     log.debug(order.toString)
@@ -79,19 +75,9 @@ class CarAdController @Inject()(
       .validate[CarAd]
       .fold(
         e => Future { BadRequest(e.toString) },
-        ca =>
-          validateCarAd(ca, kf)
-            .fold(constructResponse(f(ca)))(x => Future { BadRequest(x) })
+        ca => constructResponse(f(ca))
       )
   }
-
-  // validation acording to the task description - optionally returns an error message
-  def validateCarAd(ca: CarAd, knownFuels: List[String]): Option[String] =
-    if (!knownFuels.contains(ca.fuel)) {
-      Some(s"Fuel should be one of: " + knownFuels.mkString(", "))
-    } else {
-      None
-    }
 
   def constructResponse[T: Writes](dbRes: Future[T]): Future[Result] =
     dbRes map { t =>

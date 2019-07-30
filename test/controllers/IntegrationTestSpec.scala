@@ -55,6 +55,7 @@ class IntegrationTestSpec
       val jsCarAd = Json.parse(usedAdJson)
       val req = FakeRequest(POST, "/v1/carads").withJsonBody(jsCarAd)
       val res0 = route(app, req).get
+      info(res0.value.toString)
       status(res0) mustBe OK
       contentType(res0) mustBe Some("application/json")
       contentAsJson(res0).toString mustBe Json.parse(usedAdJson).toString
