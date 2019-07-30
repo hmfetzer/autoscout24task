@@ -26,7 +26,7 @@ trait CarAdDBSpec extends AsyncWordSpec with MustMatchers with TestData {
     "initially not enable update for carAd with id 1" in {
       recoverToSucceededIf[NoSuchElementException] {
         val db = testDb
-        db.update(ad1)
+        db.update(usedAd)
       }
     }
     "initially not delete a carAd with id 1" in {
@@ -38,15 +38,15 @@ trait CarAdDBSpec extends AsyncWordSpec with MustMatchers with TestData {
 
     " enable adding an ad " in {
       val db = testDb
-      db.save(ad1) map (_ mustBe ad1)
+      db.save(usedAd) map (_ mustBe usedAd)
     }
     " not enable adding an ad twice" in {
       val db = testDb
       // with a for comprehension the futures run sequentially
       for {
-        _ <- db.save(ad1) map (_ mustBe ad1)
+        _ <- db.save(usedAd) map (_ mustBe usedAd)
         _ <- recoverToSucceededIf[Throwable] {
-          db.save(ad1)
+          db.save(usedAd)
         }
       } yield succeed
     }
@@ -54,8 +54,8 @@ trait CarAdDBSpec extends AsyncWordSpec with MustMatchers with TestData {
       val db = testDb
       // with a for comprehension the futures run sequentially
       for {
-        _ <- db.save(ad1) map { _ mustBe ad1 }
-        _ <- db.getOne(ad1.id) map { _ mustBe ad1 }
+        _ <- db.save(usedAd) map { _ mustBe usedAd }
+        _ <- db.getOne(usedAd.id) map { _ mustBe usedAd }
       } yield succeed
     }
 
@@ -63,8 +63,8 @@ trait CarAdDBSpec extends AsyncWordSpec with MustMatchers with TestData {
       val db = testDb
       // with a for comprehension the futures run sequentially
       for {
-        _ <- db.save(ad1) map { _ mustBe ad1 }
-        _ <- db.delete(ad1.id) map { _ mustBe ad1 }
+        _ <- db.save(usedAd) map { _ mustBe usedAd }
+        _ <- db.delete(usedAd.id) map { _ mustBe usedAd }
         // after deleting db should be empty
         _ <- db.getAll(None) map { _ mustBe List() }
       } yield succeed
@@ -74,13 +74,13 @@ trait CarAdDBSpec extends AsyncWordSpec with MustMatchers with TestData {
       val db = testDb
       // with a for comprehension the futures run sequentially
       for {
-        _ <- db.save(ad1) map { _ mustBe ad1 }
+        _ <- db.save(usedAd) map { _ mustBe usedAd }
         newTitle = "new Title"
-        ad2 = ad1.copy(title = newTitle)
+        newAd = usedAd.copy(title = newTitle)
         // update should return the new element
-        _ <- db.update(ad2) map { _.title mustBe newTitle }
+        _ <- db.update(newAd) map { _.title mustBe newTitle }
         // reading from db should also return new element
-        _ <- db.getOne(ad2.id) map { _.title mustBe newTitle }
+        _ <- db.getOne(newAd.id) map { _.title mustBe newTitle }
       } yield succeed
     }
 

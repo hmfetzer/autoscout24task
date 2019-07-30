@@ -1,6 +1,6 @@
 package db;
 
-import model.CarAd
+import model._
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
@@ -44,13 +44,15 @@ trait CarAdSqlDAO extends CarAdDAO {
     val title = rs.getString("title")
     val fuel = rs.getString("fuel")
     val price = rs.getInt("price")
-    val newCar = rs.getBoolean("newCar")
     val ml = rs.getInt("mileage")
     val mileage = if (rs.wasNull()) None else Some(ml)
     val reg = rs.getDate("firstRegistration")
     val firstReg: Option[LocalDate] =
       if (rs.wasNull()) None else Some(new LocalDate(reg))
-    CarAd(id, title, fuel, price, newCar, mileage, firstReg)
+    if (mileage.isDefined || firstReg.isDefined) {
+      UsedCarAd(id, title, fuel, price, mileage.get, firstReg.get)
+    } else
+      NewCarAd(id, title, fuel, price)
   }
 
   def getOne(id: Int): Future[CarAd] = Future {
@@ -65,6 +67,11 @@ trait CarAdSqlDAO extends CarAdDAO {
 
   def save(carAd: CarAd): Future[CarAd] = Future {
     db.withConnection { con: Connection =>
+      val (ml, fr) = carAd match {
+        case UsedCarAd(_, _, _, _, mileage, firstReg) =>
+          (s"$mileage", s"${dateToSql(firstReg)}")
+        case _ => ("null", "null")
+      }
       import carAd._
       val sql = s""" 
         insert into carads values (
@@ -72,9 +79,8 @@ trait CarAdSqlDAO extends CarAdDAO {
           '$title',
           '$fuel',
           $price,
-          $newCar,
-          ${mileage.fold("null")(_.toString)},
-          ${firstRegistration.fold("null")(dateToSql(_))}
+          $ml,
+          $fr
         ) 
         """
       log.debug(sql)

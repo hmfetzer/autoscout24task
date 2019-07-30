@@ -22,16 +22,25 @@ import org.joda.time.LocalDate
  */
 
 /* Using a case class makes transfering from and to JSON easier */
-case class CarAd(
+sealed trait CarAd {
+  val id: Int
+  val title: String
+  val fuel: String
+  val price: Int
+}
+
+case class NewCarAd(
+    id: Int,
+    title: String,
+    fuel: String,
+    price: Int
+) extends CarAd
+
+case class UsedCarAd(
     id: Int,
     title: String,
     fuel: String,
     price: Int,
-    // The fieldname new can not be used because it is a reserved word.
-    // Changing it to newCar should not be a problem. (Using as scala Symbol
-    // `new` could be another option.)
-    newCar: Boolean,
-    mileage: Option[Int],
-    // Using joda for date without time, instead of the old java Date class
-    firstRegistration: Option[LocalDate]
-)
+    mileage: Int,
+    firstRegistration: LocalDate
+) extends CarAd

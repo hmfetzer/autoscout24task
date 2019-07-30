@@ -1,47 +1,45 @@
 package db;
-import model.CarAd
+import model._
 import org.joda.time.LocalDate
 
 trait TestData {
 
-  val ad1 = CarAd(
+  val usedAd = UsedCarAd(
     id = 1,
-    title = "TestAd 1",
+    title = "Used ad with id 1",
     fuel = "diesel",
     price = 2,
-    newCar = false,
-    mileage = Some(3),
-    firstRegistration = Some(new LocalDate(2015, 2, 20))
+    mileage = 3,
+    firstRegistration = new LocalDate(2015, 2, 20)
   )
 
-  val ad1Json = """ {
+  val usedAdJson = """ {
       "id": 1,
       "title": "TestAd 1",
       "fuel":  "diesel",
       "price": 2,
-      "newCar": false,
       "mileage": 3,
       "firstRegistration": "2015-02-20"
       }  """
 
-  val ad2 = CarAd(
+  val newAd = NewCarAd(
     id = 2,
-    title = "TestAd 2",
+    title = "New ad with id 2",
     fuel = "diesel",
-    price = 22,
-    newCar = true,
-    mileage = None,
-    firstRegistration = None
+    price = 22
   )
 
-  val ad2Json = """ {
+  val newAd2 = NewCarAd(
+    id = 3,
+    title = "An other new ad with id 3",
+    fuel = "diesel",
+    price = 22
+  )
+  val newAdJson = """ {
           "id": 2,
           "title": "TestAd 2",
           "fuel":  "diesel",
           "price": 22,
-          "newCar": true,
-          "mileage": null,
-          "firstRegistration": null
           }  """
 
 }

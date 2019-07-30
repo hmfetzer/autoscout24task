@@ -32,7 +32,7 @@ class CarAdController @Inject()(
   val log = LoggerFactory.getLogger(this.getClass);
   db.init()
 
-  // Ok - waiting for a future to complete is an antipattern, but here, 
+  // Ok - waiting for a future to complete is an antipattern, but here,
   // for one time access in initialisation phase it seems acceptable
   val kf: List[String] = Await.result(db.getKnownFuels(), 10.seconds);
 
@@ -86,17 +86,12 @@ class CarAdController @Inject()(
   }
 
   // validation acording to the task description - optionally returns an error message
-  def validateCarAd(ca: CarAd, knownFuels: List[String]): Option[String] = {
-    if (ca.newCar && (ca.mileage.isDefined || ca.firstRegistration.isDefined)) {
-      Some("Mileage and first registration should not be given for new cars!")
-    } else if (!ca.newCar && (ca.mileage.isEmpty || ca.firstRegistration.isEmpty)) {
-      Some("Mileage and first registration should be given for used cars!")
-    } else if (!knownFuels.contains(ca.fuel)) {
+  def validateCarAd(ca: CarAd, knownFuels: List[String]): Option[String] =
+    if (!knownFuels.contains(ca.fuel)) {
       Some(s"Fuel should be one of: " + knownFuels.mkString(", "))
     } else {
       None
     }
-  }
 
   def constructResponse[T: Writes](dbRes: Future[T]): Future[Result] =
     dbRes map { t =>

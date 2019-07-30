@@ -33,12 +33,12 @@ class IntegrationTestSpec
     }
 
     "after inserting an car ad, return it" in {
-      val jsCarAd = Json.parse(ad1Json)
+      val jsCarAd = Json.parse(usedAdJson)
       val req = FakeRequest(POST, "/v1/carads").withJsonBody(jsCarAd)
       val res0 = route(app, req).get
       status(res0) mustBe OK
       contentType(res0) mustBe Some("application/json")
-      contentAsJson(res0).toString mustBe Json.parse(ad1Json).toString
+      contentAsJson(res0).toString mustBe Json.parse(usedAdJson).toString
 
       val res1 = route(app, FakeRequest(GET, "/v1/carads")).get
       status(res1) mustBe OK
@@ -52,12 +52,12 @@ class IntegrationTestSpec
     }
 
     "after inserting and deleting an ad, be empty again" in {
-      val jsCarAd = Json.parse(ad1Json)
+      val jsCarAd = Json.parse(usedAdJson)
       val req = FakeRequest(POST, "/v1/carads").withJsonBody(jsCarAd)
       val res0 = route(app, req).get
       status(res0) mustBe OK
       contentType(res0) mustBe Some("application/json")
-      contentAsJson(res0).toString mustBe Json.parse(ad1Json).toString
+      contentAsJson(res0).toString mustBe Json.parse(usedAdJson).toString
 
       val res1 = route(app, FakeRequest(GET, "/v1/carads")).get
       status(res1) mustBe OK

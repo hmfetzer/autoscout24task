@@ -18,7 +18,6 @@ trait H2MemoryDb {
       title     varchar(255) not null,
       fuel      varchar(255) not null,
       price     int not null,
-      newCar    boolean not null,
       mileage   int,
       firstRegistration date
     );
