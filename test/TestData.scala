@@ -14,13 +14,29 @@ trait TestData {
   )
 
   val usedAdJson = """ {
+    "id": 1,
+    "title": "Used ad with id 1",
+    "fuel":  "diesel",
+    "price": 2,
+    "mileage": 3,
+    "firstRegistration": "2015-02-20"
+    }  """
+
+  val usedAdJsonWithoutMileage = """ {
       "id": 1,
-      "title": "TestAd 1",
+      "title": "Used ad with id 1",
       "fuel":  "diesel",
       "price": 2,
-      "mileage": 3,
       "firstRegistration": "2015-02-20"
       }  """
+
+  val usedAdJsonWithoutFirstReg = """ {
+        "id": 1,
+        "title": "Used ad with id 1",
+        "fuel":  "diesel",
+        "price": 2,
+        "mileage": 3
+        }  """
 
   val newAd = NewCarAd(
     id = 2,
@@ -36,10 +52,17 @@ trait TestData {
     price = 22
   )
   val newAdJson = """ {
-          "id": 2,
-          "title": "TestAd 2",
-          "fuel":  "diesel",
-          "price": 22,
-          }  """
+    "id": 2,
+    "title": "New ad with id 2",
+    "fuel":  "gasoline",
+    "price": 22
+    }  """
+
+  val unknownFuelAd = """ {
+      "id": 2,
+      "title": "New ad with id 2",
+      "fuel":  "h2",
+      "price": 22
+      }  """
 
 }

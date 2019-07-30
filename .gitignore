@@ -9,3 +9,6 @@ target
 /.g8
 /.metals
 /RUNNING_PID
+/project/.bloop
+/.gradle
+/.vscode

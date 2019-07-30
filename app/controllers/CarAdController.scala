@@ -26,8 +26,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class CarAdController @Inject()(
     cc: ControllerComponents,
     db: CarAdDAO
-) extends AbstractController(cc)
-    with JsonWritersAndReaders {
+) extends AbstractController(cc) {
+
+  import JsonWritersAndReaders._
 
   val log = LoggerFactory.getLogger(this.getClass);
   db.init()
