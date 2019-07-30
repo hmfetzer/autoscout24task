@@ -4,6 +4,9 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import java.util.NoSuchElementException
+import scala.concurrent.Future
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // a Test DB returning only Failure
 class CarAdErrorDB extends CarAdDAO {
@@ -12,16 +15,18 @@ class CarAdErrorDB extends CarAdDAO {
 
   def init() = {}
 
-  def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Failure(err)
+  def getAll(ordering: Option[Ordering]): Future[List[CarAd]] = Future {
+    throw err
+  }
 
-  def getOne(id: Int): Try[CarAd] = Failure(err)
+  def getOne(id: Int): Future[CarAd] = Future { throw err }
 
-  def save(carAd: CarAd): Try[CarAd] = Failure(err)
+  def save(carAd: CarAd): Future[CarAd] = Future { throw err }
 
-  def update(carAd: CarAd): Try[CarAd] = Failure(err)
+  def update(carAd: CarAd): Future[CarAd] = Future { throw err }
 
-  def delete(id: Int): Try[CarAd] = Failure(err)
+  def delete(id: Int): Future[CarAd] = Future { throw err }
 
-  def getKnownFuels(): Try[List[String]] = Failure(err)
+  def getKnownFuels(): Future[List[String]] = Future { throw err }
 
 }

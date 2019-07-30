@@ -1,7 +1,7 @@
 package db;
 import model.CarAd
-import scala.util.Try
 import com.google.inject.ImplementedBy
+import scala.concurrent.Future
 
 case class Ordering(field: String, descending: Boolean)
 
@@ -19,20 +19,20 @@ trait CarAdDAO {
   def init(): Unit
 
   // Failure, if DB-Exception
-  def getAll(ordering: Option[Ordering]): Try[List[CarAd]]
+  def getAll(ordering: Option[Ordering]): Future[List[CarAd]]
 
   // Failure, if not in DB or DB-Exception
-  def getOne(id: Int): Try[CarAd]
+  def getOne(id: Int): Future[CarAd]
 
   // Failure, if already in DB or DB-Exception
-  def save(carAd: CarAd): Try[CarAd]
+  def save(carAd: CarAd): Future[CarAd]
 
   // Failure, if not in DB or DB-Exception
-  def update(carAd: CarAd): Try[CarAd]
+  def update(carAd: CarAd): Future[CarAd]
 
   // Failure, if not in DB or DB-Exception
-  def delete(id: Int): Try[CarAd]
+  def delete(id: Int): Future[CarAd]
 
-  def getKnownFuels(): Try[List[String]]
+  def getKnownFuels(): Future[List[String]]
 
 }

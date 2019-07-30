@@ -13,6 +13,10 @@ import org.joda.time.LocalDate
 import org.slf4j.LoggerFactory
 import _root_.db.CarAdDAO
 import _root_.db.Ordering
+import scala.concurrent.Future
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -27,10 +31,12 @@ class CarAdController @Inject()(
 
   val log = LoggerFactory.getLogger(this.getClass);
   db.init()
-  val kf = db.getKnownFuels().fold(throw _, (ls: List[String]) => ls);
-  log.debug(s"Known Fuels: " + kf.mkString(", "))
 
-  def getAll() = Action { implicit request: Request[AnyContent] =>
+  // Ok - waiting for a future to complete is an antipattern, but here, 
+  // for one time access in initialisation phase it seems acceptable
+  val kf: List[String] = Await.result(db.getKnownFuels(), 10.seconds);
+
+  def getAll() = Action.async { implicit request: Request[AnyContent] =>
     val order = orderParam(request.getQueryString(db.orderString))
     log.debug(order.toString)
     constructResponse(db.getAll(order))
@@ -46,35 +52,36 @@ class CarAdController @Inject()(
       }
   )
 
-  def getOne(id: Int) = Action { implicit request: Request[AnyContent] =>
+  def getOne(id: Int) = Action.async { implicit request: Request[AnyContent] =>
     constructResponse(db.getOne(id))
   }
 
   // Expects a NEW id provided in the JSON-Body
-  def add() = Action(parse.tolerantJson) { implicit request: Request[JsValue] =>
-    validateAndProcessJsonCarAd(db.save)
+  def add() = Action(parse.tolerantJson).async {
+    implicit request: Request[JsValue] =>
+      validateAndProcessJsonCarAd(db.save)
   }
 
   // Expects a USED id provided in the JSON-Body
-  def update = Action(parse.tolerantJson) {
+  def update = Action(parse.tolerantJson).async {
     implicit request: Request[JsValue] =>
       validateAndProcessJsonCarAd(db.update)
   }
 
-  def delete(id: Int) = Action { implicit request: Request[AnyContent] =>
+  def delete(id: Int) = Action.async { implicit request: Request[AnyContent] =>
     constructResponse(db.delete(id))
   }
 
   def validateAndProcessJsonCarAd(
-      f: CarAd => Try[CarAd]
-  )(implicit request: Request[JsValue]): Result = {
+      f: CarAd => Future[CarAd]
+  )(implicit request: Request[JsValue]): Future[Result] = {
     request.body
       .validate[CarAd]
       .fold(
-        e => BadRequest(e.toString),
+        e => Future { BadRequest(e.toString) },
         ca =>
           validateCarAd(ca, kf)
-            .fold(constructResponse(f(ca)))(BadRequest(_))
+            .fold(constructResponse(f(ca)))(x => Future { BadRequest(x) })
       )
   }
 
@@ -91,13 +98,13 @@ class CarAdController @Inject()(
     }
   }
 
-  def constructResponse[T: Writes](dbRes: Try[T]): Result = {
-    dbRes match {
-      case Success(t)                           => Ok(Json.toJson[T](t))
-      case Failure(e: NoSuchElementException)   => NotFound(e.toString)
-      case Failure(e: IllegalArgumentException) => BadRequest(e.toString)
-      case Failure(e)                           => InternalServerError(e.toString)
+  def constructResponse[T: Writes](dbRes: Future[T]): Future[Result] =
+    dbRes map { t =>
+      Ok(Json.toJson[T](t))
+    } recover {
+      case e: NoSuchElementException   => NotFound(e.toString)
+      case e: IllegalArgumentException => BadRequest(e.toString)
+      case e                           => InternalServerError(e.toString)
     }
-  }
 
 }

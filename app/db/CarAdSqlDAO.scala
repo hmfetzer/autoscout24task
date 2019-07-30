@@ -14,6 +14,9 @@ import scala.collection.mutable
 import org.joda.time.LocalDate
 import org.slf4j.LoggerFactory
 import play.api.db.Database
+import scala.concurrent.Future
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // contains code valid for (hopefully) all SQL databases
 trait CarAdSqlDAO extends CarAdDAO {
@@ -25,7 +28,7 @@ trait CarAdSqlDAO extends CarAdDAO {
 
   def dateToSql(d: LocalDate): String
 
-  def getAll(ordering: Option[Ordering]): Try[List[CarAd]] = Try {
+  def getAll(ordering: Option[Ordering]): Future[List[CarAd]] = Future {
     db.withConnection { con: Connection =>
       val sql = "select * from carads " + orderString(ordering)
       log.debug(sql)
@@ -50,7 +53,7 @@ trait CarAdSqlDAO extends CarAdDAO {
     CarAd(id, title, fuel, price, newCar, mileage, firstReg)
   }
 
-  def getOne(id: Int): Try[CarAd] = Try {
+  def getOne(id: Int): Future[CarAd] = Future {
     db.withConnection { con: Connection =>
       val sql = "select * from carads where id = " + id
       log.debug(sql)
@@ -60,7 +63,7 @@ trait CarAdSqlDAO extends CarAdDAO {
     }
   }
 
-  def save(carAd: CarAd): Try[CarAd] = Try {
+  def save(carAd: CarAd): Future[CarAd] = Future {
     db.withConnection { con: Connection =>
       import carAd._
       val sql = s""" 
@@ -81,30 +84,28 @@ trait CarAdSqlDAO extends CarAdDAO {
   }
 
   // Not efficient - but very easy to implement:
-  def update(carAd: CarAd): Try[CarAd] =
+  def update(carAd: CarAd): Future[CarAd] =
     delete(carAd.id).flatMap(_ => save(carAd))
 
-  def delete(id: Int): Try[CarAd] =
-    getOne(id).flatMap(
+  def delete(id: Int): Future[CarAd] =
+    getOne(id).map(
       ca =>
-        Try {
-          db.withConnection { con =>
-            val sql = "delete from carads where id = " + id
-            log.debug(sql)
-            val stmt = con.createStatement
-            stmt.execute(sql)
-            if (stmt.getUpdateCount() == 1) ca
-            else
-              throw new Error(
-                "Not one record was deleted but " + stmt.getUpdateCount()
-              )
-          }
+        db.withConnection { con =>
+          val sql = "delete from carads where id = " + id
+          log.debug(sql)
+          val stmt = con.createStatement
+          stmt.execute(sql)
+          if (stmt.getUpdateCount() == 1) ca
+          else
+            throw new Error(
+              "Not one record was deleted but " + stmt.getUpdateCount()
+            )
         }
     )
 
   // the known fuels are stored in a db table.
   // Fuels can be added or removed without recompile!
-  def getKnownFuels(): Try[List[String]] = Try {
+  def getKnownFuels(): Future[List[String]] = Future {
     db.withConnection { con: Connection =>
       val sql = "select * from fuels"
       val rs = con.createStatement.executeQuery(sql)
